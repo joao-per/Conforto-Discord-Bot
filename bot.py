@@ -1,14 +1,19 @@
 import discord
 from discord.ext import commands
 from datetime import datetime, timedelta
+import json
+
 
 intents = discord.Intents.default()
 intents.messages = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-TOKEN = OCULTO
-CHANNEL_ID = OCULTO
+with open('env.json') as config_file:
+    config = json.load(config_file)
+
+TOKEN = config['TOKEN']
+CHANNEL_ID = config['CHANNEL_ID']
 
 # Dictionary to keep track of last vent time
 last_vent_time = {}
@@ -25,7 +30,9 @@ async def on_message(message):
 
         if message.content.startswith('!desabafo'):
             if user_id in last_vent_time and (current_time - last_vent_time[user_id]) < timedelta(days=1):
-                await message.author.send("Só é possível enviar um desabafo por dia. Por favor, tenta novamente amanhã.")
+                time_to_send = last_vent_time[user_id] + timedelta(days=1) + timedelta(hours=1)
+                time_to_send = time_to_send.strftime("%d/%m/%Y %H:%M:%S")
+                await message.author.send("Só é possível enviar um desabafo por dia. Podes enviar outro: " + time_to_send)
             else:
                 last_vent_time[user_id] = current_time
                 channel = bot.get_channel(CHANNEL_ID)
@@ -39,7 +46,7 @@ async def on_message(message):
                 "Para enviar um desabafo, começa a tua mensagem com ***!desabafo***.\n"
                 "Só podes enviar **um desabafo por dia**, então pensa bem em como estruturar a tua mensagem.\n"
                 "Se possível, identifica-te mencionando o teu género e idade (se não estiveres confortável com a idade exata, coloca uma idade aproximada).\n"
-                "*Exemplo:* !desabafo Eu, (M 23), tenho passado por uma fase difícil no trabalho..."
+                "*Exemplo:* `!desabafo Eu, (M 23), tenho passado por uma fase difícil no trabalho...`"
             )
     await bot.process_commands(message)
 
