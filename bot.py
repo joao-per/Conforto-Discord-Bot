@@ -37,8 +37,27 @@ async def on_message(message):
                 last_vent_time[user_id] = current_time
                 channel = bot.get_channel(CHANNEL_ID)
                 if channel:
-                    await channel.send(f'Desabafo diário: {message.content[len("!desabafo"):].strip()}')
-                    await message.author.send("Seu desabafo foi enviado anonimamente.")
+                    initial_message = await channel.send(f'Desabafo diário: {message.content[len("!desabafo"):].strip()}')
+                    thread = await channel.create_thread(
+                        name=f"Desabafo anónimo",
+                        type=discord.ChannelType.public_thread,
+                        message=initial_message
+                    )
+                    await message.author.send("O teu desabafo foi enviado anonimamente.")
+
+                    rules_message = (
+                        "Bem-vindo ao tópico de desabafo! 🌟\n"
+                        "Por favor, siga estas regras básicas:\n"
+                        "1. Sem profanidade.\n"
+                        "2. Respeite os outros.\n"
+                        "3. Não compartilhe informações pessoais.\n"
+                        "4. Ofereça apoio e seja gentil.\n"
+                        "Obrigado por compartilhar e fazer parte da comunidade! 💖"
+                    )
+                    await thread.send(rules_message)
+
+                    await initial_message.add_reaction("⬆️")
+                    await initial_message.add_reaction("⬇️")
                 else:
                     await message.author.send("Houve um erro ao enviar sua mensagem.")
         else:
