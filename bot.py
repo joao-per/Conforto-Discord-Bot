@@ -142,23 +142,36 @@ async def handle_schedule_meeting(message):
 @bot.command(name='disponibilidade')
 @commands.has_role('Voluntários 🤲')
 async def handle_set_availability(ctx):
-    if isinstance(ctx.channel, discord.DMChannel):
-        await ctx.send("Este comando só pode ser usado em um servidor.")
-        return
-
-    await ctx.send("Por favor, envie os dias e horários disponíveis no formato:\nDia1: Hora1, Hora2\nDia2: Hora3, Hora4")
+    await ctx.send("Por favor, envie os dias e horários disponíveis no formato:\n`Dia/Mês - Hora1, Hora2`\nExemplo: `24/08 - 14:00, 15:00`")
 
     def check_message(m):
         return m.author == ctx.author and m.channel == ctx.channel
 
     availability_msg = await bot.wait_for('message', check=check_message)
     availability_data = availability_msg.content.split("\n")
+    
     for entry in availability_data:
-        day, times = entry.split(":")
-        times_list = [time.strip() for time in times.split(",")]
-        psychologists_availability[day.strip()] = times_list
+        try:
+            date_part, times_part = entry.split(" - ")
+            day, month = map(int, date_part.split("/"))
+            times_list = [time.strip() for time in times_part.split(",")]
 
-    await ctx.send("Disponibilidade definida com sucesso.") 
+            # Create a datetime object for the day to store availability
+            year = datetime.now().year  # Assume current year
+            date_str = f"{day:02}/{month:02}/{year:04}"
+            date_obj = datetime.strptime(date_str, "%d/%m/%Y").date()
+
+            # Store availability
+            if date_obj not in psychologists_availability:
+                psychologists_availability[date_obj] = []
+
+            psychologists_availability[date_obj].extend(times_list)
+            psychologists_availability[date_obj] = list(set(psychologists_availability[date_obj]))  # Remove duplicates
+
+        except ValueError:
+            await ctx.send(f"Formato inválido: {entry}. Por favor, siga o formato `Dia/Mês - Hora1, Hora2`.")
+
+    await ctx.send("Disponibilidade definida com sucesso.")
 
 @bot.command()
 @commands.has_role('Staff')
