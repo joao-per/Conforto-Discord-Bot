@@ -185,6 +185,31 @@ async def handle_set_availability(ctx):
 
     await ctx.send("Disponibilidade definida com sucesso.")
 
+@bot.command(name='ver_disponibilidade')
+@commands.has_role('Voluntários 🤲')
+async def handle_view_availability(ctx):
+    availability_message = "Disponibilidade dos psicólogos:\n"
+    for day, times in psychologists_availability.items():
+        availability_message += f"{day.strftime('%d/%m/%Y')}: {', '.join(times)}\n"
+    await ctx.send(availability_message)
+
+@bot.command(name='tickets')
+@commands.has_role('Staff')
+async def handle_view_tickets(ctx):
+    tickets_message = "Tickets dos usuários:\n"
+    for user_id, tickets in user_tickets.items():
+        user = ctx.guild.get_member(user_id)
+        if user:
+            tickets_message += f"{user.name}: {tickets}\n"
+    await ctx.send(tickets_message)
+
+@bot.command(name='help')
+async def handle_help(ctx):
+    await ctx.send(
+        "Comandos disponíveis (apenas por mensagem privada):\n"
+        "1. `!desabafo` - Enviar um desabafo anónimo.\n"
+        "2. `!marcar` - Marcar uma reunião com um psicólogo.\n")
+
 @bot.command()
 @commands.has_role('Staff')
 async def add_ticket(ctx, member: discord.Member):
