@@ -16,7 +16,7 @@ intents.message_content = True
 intents.dm_messages = True
 intents.dm_reactions = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 
 with open('env.json') as config_file:
     config = json.load(config_file)
@@ -62,16 +62,16 @@ async def on_message(message):
     if not message.author.bot:
         if isinstance(message.channel, discord.DMChannel):
             if message.content.startswith('!desabafo'):
-                await handle_desabafo(message)
+                if len(message.content.strip()) == len('!desabafo'):
+                    await message.author.send(
+                        "Para usar o comando `!desabafo`, envie `!desabafo` seguido do seu desabafo.\n"
+                        "Exemplo: `!desabafo Estou me sentindo triste hoje.`"
+                    )
+                else:
+                    await handle_desabafo(message)
             elif message.content.startswith('!marcar'):
                 await handle_schedule_meeting(message)
-            elif message.content.startswith('!help'):
-                await message.author.send(
-                    "Comandos disponíveis:\n"
-                    "1. `!desabafo` - Enviar um desabafo anónimo.\n"
-                    "2. `!marcar` - Marcar uma reunião com um psicólogo.\n"
-                    "3. `!help` - Exibir esta mensagem de ajuda novamente."
-                )
+
     await bot.process_commands(message)
 
 async def handle_desabafo(message):
@@ -253,12 +253,20 @@ async def handle_view_tickets(ctx):
             tickets_message += f"{user.name}: {tickets}\n"
     await ctx.send(tickets_message)
 
-@bot.command(name='ajuda')
-async def handle_help(ctx):
+# do bot command to be !help and !ajuda
+@bot.command(name='help')
+async def custom_help(ctx):
     await ctx.send(
-        "Comandos disponíveis (apenas por mensagem privada):\n"
+        "Comandos disponíveis:\n"
         "1. `!desabafo` - Enviar um desabafo anónimo.\n"
-        "2. `!marcar` - Marcar uma reunião com um psicólogo.\n")
+        "2. `!marcar` - Marcar uma reunião com um psicólogo.\n"
+        "3. `!help` - Exibir esta mensagem de ajuda.\n"
+        "4. `!disponibilidade` - Definir disponibilidade (apenas para psicólogos).\n"
+        "5. `!add_ticket` - Adicionar um ticket para um usuário (apenas para staff).\n"
+        "6. `!tickets` - Ver tickets dos usuários (apenas para staff).\n"
+        "7. `!ver_disponibilidade` - Ver disponibilidade dos psicólogos (apenas para psicólogos).\n"
+        "8. `!ajuda` - Exibir esta mensagem de ajuda novamente."
+    )
 
 @bot.command()
 @commands.has_role('Staff')
