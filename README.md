@@ -1,24 +1,29 @@
-# 🛠️ Discord Vent Bot
 
-Welcome to the Discord Vent Bot! This bot is designed to create a safe and anonymous space for users to vent their feelings and seek support in your Discord server. 🌈
+<div align="center">
+    <img alt="Conforto" src="https://github.com/joao-per/joao-per/blob/main/Badges/Conforto.png" />
+</div>
+
+# 🛠️ Discord Conforto Bot
+
+Welcome to the Discord Conforto Bot! This bot is designed to create a safe and anonymous space for users to vent their feelings and seek support in your Discord server. 🌈
 
 ## 🤖 Bot Functionality
 
-The Vent Bot has the following features:
+The Conforto Bot has the following features:
 
 1. **Anonymous Venting**: Users can send a direct message to the bot starting with `!desabafo`. The bot will post the message anonymously in a designated channel.
-2. **Daily Limit**: Each user can send one vent message per day to ensure thoughtful communication.
+2. **Daily Limit**: Each user can send one Conforto message per day to ensure thoughtful communication.
 3. **Guidance Message**: If a user sends a message without the `!desabafo` keyword, the bot will respond with instructions on how to use the bot (in Portuguese).
 
 ## 🚀 Getting Started
 
-To get your Vent Bot up and running, follow these steps:
+To get your Conforto Bot up and running, follow these steps:
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/discord-vent-bot.git
-cd discord-vent-bot
+git clone https://github.com/yourusername/discord-Conforto-bot.git
+cd discord-Conforto-bot
 ```
 
 ### 2. Install Dependencies
@@ -34,7 +39,11 @@ You need to create a config.json file in the root directory of the project. This
 ```json
 {
     "TOKEN": "YOUR_BOT_TOKEN",
-    "CHANNEL_ID": YOUR_CHANNEL_ID
+    "CHANNEL_ID": YOUR_CHANNEL_ID,
+    "DB_USER": "YOuR_DB_USER",
+    "DB_PASSWORD": "YOUR_DB_PASSWORD",
+    "DB_HOST": "YOUR_DB_HOST",
+    "DB_DATABASE": "YOUR_DB_NAME"
 }
 ```
 
