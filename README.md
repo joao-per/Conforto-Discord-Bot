@@ -1,11 +1,14 @@
+<h1 align="center">
+	📖 Conforto Bot 📖
+</h1>
+
 
 <div align="center">
     <img alt="Conforto" src="https://github.com/joao-per/joao-per/blob/main/Badges/Conforto.png" />
 </div>
 
-# 🛠️ Discord Conforto Bot
 
-Welcome to the Discord Conforto Bot! This bot is designed to create a safe and anonymous space for users to vent their feelings and seek support in your Discord server. 🌈
+This bot is designed to create a safe and anonymous space for users to vent their feelings and seek support in your Discord server. 🌈
 
 ## 🤖 Bot Functionality
 
