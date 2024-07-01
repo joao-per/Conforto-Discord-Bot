@@ -6,7 +6,6 @@ import json
 import asyncio
 import mysql.connector
 from mysql.connector import errorcode
-from db_config import db_config
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -24,6 +23,13 @@ with open('env.json') as config_file:
 TOKEN = config['TOKEN']
 CHANNEL_ID = config['CHANNEL_ID']
 MEETINGS_ID = config['MEETINGS_ID']
+
+db_config = {
+    'user': config['DB_USER'],
+    'password': config['DB_PASSWORD'],
+    'host': config['DB_HOST'],
+    'database': config['DB_DATABASE']
+}
 
 cnx = None
 cursor = None
@@ -52,8 +58,6 @@ async def on_member_join(member):
             f"Bem-vindo(a) ao servidor, {member.mention}! Aqui estão os comandos disponíveis:\n"
             "1. `!desabafo` - Enviar um desabafo anónimo.\n"
             "2. `!marcar` - Marcar uma reunião com um psicólogo.\n"
-            "3. `!disponibilidade` - Definir disponibilidade (apenas para psicólogos).\n"
-            "4. `!add_ticket` - Adicionar um ticket para um usuário (apenas para staff).\n"
             "5. `!help` - Exibir esta mensagem de ajuda novamente."
         )
 
@@ -81,7 +85,7 @@ async def handle_desabafo(message):
     cursor.execute("SELECT last_vent_time FROM user_tickets WHERE user_id = %s", (user_id,))
     result = cursor.fetchone()
 
-    if result and (current_time - result[0]) < timedelta(days=1):
+    if result and result[0] and (current_time - result[0]) < timedelta(days=1):
         time_to_send = result[0] + timedelta(days=1) + timedelta(hours=1)
         time_to_send = time_to_send.strftime("%d/%m/%Y %H:%M:%S")
         await message.author.send(f"Só é possível enviar um desabafo por dia. Podes enviar outro: {time_to_send}")
@@ -108,8 +112,8 @@ async def handle_desabafo(message):
                 "Por favor, segue estas regras básicas:\n"
                 "1. Sem profanidade.\n"
                 "2. Respeita os outros.\n"
-                "3. Não compartilhe informações pessoais.\n"
-                "4. Ofereça apoio e seja gentil.\n"
+                "3. Não compartilhes informações pessoais.\n"
+                "4. Ofereçe apoio e seja gentil.\n"
                 "Obrigado por compartilhares e fazeres parte da comunidade! 💖"
             )
             await thread.send(rules_message)
@@ -126,7 +130,7 @@ async def handle_schedule_meeting(message):
     tickets = result[0] if result else 0
 
     if tickets < 1:
-        await message.author.send("Você não tem tickets suficientes para marcar uma reunião. Por favor, peça um ticket a um membro da staff.")
+        await message.author.send("Não tens tickets suficientes para marcar uma reunião. Por favor, pede um ticket a um membro da staff.")
         return
 
     cursor.execute("SELECT DISTINCT date FROM psychologist_availability ORDER BY date")
@@ -261,11 +265,6 @@ async def custom_help(ctx):
         "1. `!desabafo` - Enviar um desabafo anónimo.\n"
         "2. `!marcar` - Marcar uma reunião com um psicólogo.\n"
         "3. `!help` - Exibir esta mensagem de ajuda.\n"
-        "4. `!disponibilidade` - Definir disponibilidade (apenas para psicólogos).\n"
-        "5. `!add_ticket` - Adicionar um ticket para um usuário (apenas para staff).\n"
-        "6. `!tickets` - Ver tickets dos usuários (apenas para staff).\n"
-        "7. `!ver_disponibilidade` - Ver disponibilidade dos psicólogos (apenas para psicólogos).\n"
-        "8. `!ajuda` - Exibir esta mensagem de ajuda novamente."
     )
 
 @bot.command()
